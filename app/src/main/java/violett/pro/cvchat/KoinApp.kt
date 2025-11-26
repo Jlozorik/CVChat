@@ -6,7 +6,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import violett.pro.cvchat.di.mainModule
-import violett.pro.cvchat.di.repoModule
+
 
 class KoinApp : Application() {
     override fun onCreate() {
@@ -19,8 +19,7 @@ class KoinApp : Application() {
             androidContext(this@KoinApp)
             // Load modules
             modules(
-                repoModule,
-                mainModule
+                mainModule,
             )
         }
     }
