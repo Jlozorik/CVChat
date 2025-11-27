@@ -14,6 +14,9 @@ interface ContactDao {
     @Query("SELECT * FROM contacts")
     fun getAllContacts(): Flow<List<ContactEntity>>
 
+    @Query("UPDATE contacts SET name = :name WHERE tempId = :tempId")
+    suspend fun updateContact(tempId: String, name: String)
+
     @Query("SELECT * FROM contacts WHERE tempId = :tempId LIMIT 1")
     suspend fun getContactByTempId(tempId: String): ContactEntity?
 

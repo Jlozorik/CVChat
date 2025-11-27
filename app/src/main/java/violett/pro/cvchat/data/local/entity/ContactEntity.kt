@@ -9,13 +9,13 @@ data class ContactEntity(
     val publicKey: String,
     val name: String = "",
     @PrimaryKey(autoGenerate = false)
-    val tempId: String
+    val tempId: String,
 ) {
     fun toDomain(): Contact {
         return Contact(
             publicKey = publicKey,
             name = name,
-            tempId = tempId
+            tempId = tempId,
         )
     }
 }

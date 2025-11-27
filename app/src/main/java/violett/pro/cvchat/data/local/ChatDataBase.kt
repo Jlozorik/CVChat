@@ -9,7 +9,7 @@ import violett.pro.cvchat.data.local.entity.MessageEntity
 
 @Database(
     entities = [ContactEntity::class, MessageEntity::class],
-    version = 1,
+    version = 3,
     exportSchema = false // Для продакшена лучше true и настроить схемы
 )
 abstract class ChatDatabase : RoomDatabase() {

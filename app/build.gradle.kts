@@ -87,6 +87,7 @@ dependencies {
 
     ksp("androidx.room:room-compiler:2.8.4")
     implementation("androidx.room:room-ktx:2.8.4")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)

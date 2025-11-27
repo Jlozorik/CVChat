@@ -7,7 +7,7 @@ import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
-import violett.pro.cvchat.data.remote.model.PublicKeyRequestDto
+import violett.pro.cvchat.data.remote.model.SendPublicKeyRequestDto
 import violett.pro.cvchat.domain.model.errors.NetworkError
 import violett.pro.cvchat.domain.repo.SendKeyRepo
 import violett.pro.cvchat.domain.util.CustomResult
@@ -18,7 +18,7 @@ class SendKeyRepoImpl(
 
     override suspend fun sendPublicKey(publicKey: String, tempId: String): CustomResult<Unit, NetworkError> {
         return try {
-            val requestDto = PublicKeyRequestDto(
+            val requestDto = SendPublicKeyRequestDto(
                 publicKey = publicKey,
                 tempId = tempId
             )

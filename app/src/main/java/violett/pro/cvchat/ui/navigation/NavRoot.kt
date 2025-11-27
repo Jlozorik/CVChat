@@ -2,6 +2,7 @@ package violett.pro.cvchat.ui.navigation
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ fun NavRoot(
 ) {
     val backStack = rememberNavBackStack(startScreen)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    val lazyColumnContactState = rememberLazyListState()
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -56,6 +58,7 @@ fun NavRoot(
                     NavEntry(key=key){
                         ContactScreen(
                             modifier = Modifier.fillMaxSize(),
+                            lazyColumnState = lazyColumnContactState
                         )
                     }
                 }

@@ -33,7 +33,6 @@ class CryptoManagerImpl(
 
         val sharedSecretBytes = keyAgreement.generateSecret()
 
-        // KDF для получения надежного AES ключа из общего секрета
         val messageDigest = MessageDigest.getInstance(KDF_ALGORITHM)
         val derivedKeyBytes = messageDigest.digest(sharedSecretBytes)
 
