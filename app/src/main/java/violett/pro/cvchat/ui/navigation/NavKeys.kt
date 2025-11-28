@@ -9,3 +9,6 @@ object KeyGenScreenUi : NavKey
 
 @Serializable
 object ContactScreenUi : NavKey
+
+@Serializable
+object LoadingScreenUi : NavKey

@@ -8,6 +8,7 @@ import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.viewModelOf
@@ -17,6 +18,7 @@ import violett.pro.cvchat.data.crypto.CryptoManagerImpl
 import violett.pro.cvchat.data.crypto.KeyManager
 import violett.pro.cvchat.data.crypto.KeyManagerImpl
 import violett.pro.cvchat.data.local.ChatDatabase
+import violett.pro.cvchat.data.remote.ChatSocketService
 import violett.pro.cvchat.data.repo.ContactRepoImpl
 import violett.pro.cvchat.data.repo.FetchPBKRepoImpl
 import violett.pro.cvchat.data.repo.MessageRepoImpl
@@ -36,6 +38,7 @@ import violett.pro.cvchat.domain.usecases.bd.contact.UpdateContactNameUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.GetChatMessagesUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.SaveMessageUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.UpdateMessageStatusUseCase
+import violett.pro.cvchat.ui.SocketViewModel
 import violett.pro.cvchat.ui.contacts.ContactViewModel
 import violett.pro.cvchat.ui.keygen.KeyGenViewModel
 
@@ -87,6 +90,8 @@ val mainModule = module {
             ignoreUnknownKeys = true
             isLenient = true
             encodeDefaults = true
+            classDiscriminator = "type"
+            prettyPrint = true
         }
     }
     single {
@@ -94,7 +99,7 @@ val mainModule = module {
             install(ContentNegotiation) {
                 json(get())
             }
-
+            install(WebSockets)
             install(Logging) {
                 logger = Logger.ANDROID
                 level = LogLevel.ALL
@@ -109,6 +114,9 @@ val mainModule = module {
 
     viewModelOf(::KeyGenViewModel)
     viewModelOf(::ContactViewModel)
+    viewModelOf(::SocketViewModel)
+
+    single { ChatSocketService(get(), get()) }
 
 
 }

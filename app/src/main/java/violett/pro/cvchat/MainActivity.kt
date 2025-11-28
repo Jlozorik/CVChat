@@ -5,11 +5,21 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.content.edit
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import violett.pro.cvchat.ui.SocketViewModel
 import violett.pro.cvchat.ui.navigation.ContactScreenUi
 import violett.pro.cvchat.ui.navigation.KeyGenScreenUi
 import violett.pro.cvchat.ui.navigation.NavRoot
@@ -17,6 +27,7 @@ import violett.pro.cvchat.ui.theme.CVChatTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val socketViewModel: SocketViewModel by viewModel()
     private val sharedPrefs by lazy {
         getSharedPreferences("cvchat_prefs", MODE_PRIVATE)
     }
@@ -25,6 +36,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val tempId = sharedPrefs.getString("TEMP_ID", null)
+
+        if (tempId != null) {
+            ProcessLifecycleOwner.get().lifecycle.addObserver(
+                object : DefaultLifecycleObserver {
+                    override fun onStart(owner: LifecycleOwner) {
+                        socketViewModel.connect(tempId)
+                    }
+
+                    override fun onStop(owner: LifecycleOwner) {
+                        socketViewModel.disconnect()
+                    }
+                }
+            )
+        }
         val areKeysGenerated = sharedPrefs.getBoolean("KEY_GENERATED_FLAG", false)
         val startScreen = if (areKeysGenerated) {
             ContactScreenUi
@@ -33,6 +58,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             CVChatTheme {
+                val insets = WindowInsets.systemBars.asPaddingValues()
                 LaunchedEffect(true) {
                     println(tempId)
                 }
@@ -45,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 }
                 Surface(modifier = Modifier.fillMaxSize()) {
                     NavRoot(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(insets),
                         startScreen = startScreen,
                         tempId = tempId,
                         onKeysGenerated = {

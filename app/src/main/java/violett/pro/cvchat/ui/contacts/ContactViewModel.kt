@@ -1,9 +1,11 @@
 package violett.pro.cvchat.ui.contacts
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -16,15 +18,18 @@ import violett.pro.cvchat.domain.usecases.FetchPBKUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.GetAllContactsUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.GetContactByIdUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.SaveContactUseCase
+import violett.pro.cvchat.domain.usecases.bd.contact.UpdateContactNameUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.SaveMessageUseCase
 import violett.pro.cvchat.domain.util.onFailure
 import violett.pro.cvchat.domain.util.onSuccess
+import javax.crypto.SecretKey
 
 class ContactViewModel(
     private val fetchPBKUseCase: FetchPBKUseCase,
     private val saveContactUseCase: SaveContactUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
     private val getAllContactsUseCase: GetAllContactsUseCase,
+    private val updateContactNameUseCase: UpdateContactNameUseCase,
     private val getContactByIdUseCase: GetContactByIdUseCase,
     private val cryptoManager: CryptoManager
 ) : ViewModel() {
@@ -37,6 +42,34 @@ class ContactViewModel(
 
     init {
         loadContacts()
+    }
+
+    fun changeName(tempId: String, name : String){
+        viewModelScope.launch {
+            updateContactNameUseCase(tempId = tempId, newName = name)
+                .onSuccess {
+                    _contactState.update {
+                        it.copy(
+                            contacts = it.contacts.map { contact ->
+                                if (contact.tempId == tempId) {
+                                    contact.copy(name = name)
+                                } else {
+                                    contact
+                                }
+                            }
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _action.send(ContactActions.ShowToast(
+                        when(error)
+                        {
+                            is RoomError.Unknown -> error.message
+                            else -> "Имя не было изменено"
+                        })
+                    )
+                }
+        }
     }
 
     fun addUser(tempId : String) {
@@ -75,10 +108,21 @@ class ContactViewModel(
         viewModelScope.launch {
             getAllContactsUseCase()
                 .onSuccess { result ->
+                    val contacts = result.map {
+                        val publicKeyBytes = Base64.decode(it.publicKey, Base64.DEFAULT)
+                        val secretKey : SecretKey = cryptoManager.calculateSharedSecret(publicKeyBytes)
+                        Contact(
+                            tempId = it.tempId,
+                            publicKey = it.publicKey,
+                            name = it.name,
+                            sharedSecret = secretKey
+                        )
+                    }
+
                     _contactState.update {
                         it.copy(
                             isLoading = false,
-                            contacts = result
+                            contacts = contacts
                         )
                     }
                     Log.d("ContactViewModel", "loadContacts: $result")
@@ -102,7 +146,7 @@ class ContactViewModel(
 
 
 data class ContactState(
-    val isLoading : Boolean = false,
+    val isLoading : Boolean = true,
     val contacts : List<Contact> = emptyList(),
 )
 
