@@ -1,6 +1,7 @@
 package violett.pro.cvchat.ui.contacts
 
 import ContactItem
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -143,7 +144,7 @@ fun ContactScreen(
 
                             },
                             onDeleteClick = {
-
+                                viewModel.deleteContact(contact)
                             },
                         )
                     }
@@ -157,6 +158,7 @@ fun ContactScreen(
             CustomInputDialog(
                 onDismiss = { showDialog = false },
                 onConfirm = { input ->
+                    Log.d("ContactScreen", "ContactScreen: $input")
                     scope.launch {
                         viewModel.addUser(input)
                     }

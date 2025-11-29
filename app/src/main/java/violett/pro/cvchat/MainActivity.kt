@@ -20,6 +20,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import violett.pro.cvchat.ui.SocketViewModel
+import violett.pro.cvchat.ui.navigation.ChatScreenUi
 import violett.pro.cvchat.ui.navigation.ContactScreenUi
 import violett.pro.cvchat.ui.navigation.KeyGenScreenUi
 import violett.pro.cvchat.ui.navigation.NavRoot
@@ -51,11 +52,12 @@ class MainActivity : ComponentActivity() {
             )
         }
         val areKeysGenerated = sharedPrefs.getBoolean("KEY_GENERATED_FLAG", false)
-        val startScreen = if (areKeysGenerated) {
-            ContactScreenUi
-        } else {
-            KeyGenScreenUi
-        }
+//        val startScreen = if (areKeysGenerated) {
+//            ContactScreenUi
+//        } else {
+//            KeyGenScreenUi
+//        }
+        val startScreen = ChatScreenUi
         setContent {
             CVChatTheme {
                 val insets = WindowInsets.systemBars.asPaddingValues()
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 }
                 Surface(modifier = Modifier.fillMaxSize()) {
                     NavRoot(
-                        modifier = Modifier.fillMaxSize().padding(insets),
+                        modifier = Modifier.fillMaxSize(),
                         startScreen = startScreen,
                         tempId = tempId,
                         onKeysGenerated = {

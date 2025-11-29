@@ -12,3 +12,6 @@ object ContactScreenUi : NavKey
 
 @Serializable
 object LoadingScreenUi : NavKey
+
+@Serializable
+object ChatScreenUi : NavKey

@@ -15,6 +15,7 @@ import violett.pro.cvchat.data.crypto.CryptoManager
 import violett.pro.cvchat.domain.model.Contact
 import violett.pro.cvchat.domain.model.errors.RoomError
 import violett.pro.cvchat.domain.usecases.FetchPBKUseCase
+import violett.pro.cvchat.domain.usecases.bd.contact.DeleteContactUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.GetAllContactsUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.GetContactByIdUseCase
 import violett.pro.cvchat.domain.usecases.bd.contact.SaveContactUseCase
@@ -31,6 +32,7 @@ class ContactViewModel(
     private val getAllContactsUseCase: GetAllContactsUseCase,
     private val updateContactNameUseCase: UpdateContactNameUseCase,
     private val getContactByIdUseCase: GetContactByIdUseCase,
+    private val deleteContactUseCase: DeleteContactUseCase,
     private val cryptoManager: CryptoManager
 ) : ViewModel() {
 
@@ -42,6 +44,31 @@ class ContactViewModel(
 
     init {
         loadContacts()
+    }
+
+    fun deleteContact(contact: Contact) {
+        viewModelScope.launch {
+            deleteContactUseCase(contact)
+                .onSuccess {
+                    _contactState.update {
+                        it.copy(
+                            contacts = it.contacts.filter {localContact-> localContact.tempId != contact.tempId }
+                        )
+                    }
+                }
+                .onFailure {
+                    _action.send(ContactActions.ShowToast(
+                        when(it)
+                        {
+                            is RoomError.Unknown -> it.message
+                            is RoomError.DeleteError -> it.message
+                            else -> "Хз чо за ошибка"
+                        }
+                    )
+                    )
+                }
+
+        }
     }
 
     fun changeName(tempId: String, name : String){

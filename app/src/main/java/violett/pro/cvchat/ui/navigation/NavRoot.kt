@@ -2,7 +2,10 @@ package violett.pro.cvchat.ui.navigation
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -16,6 +19,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 
 import androidx.navigation3.ui.NavDisplay
+import violett.pro.cvchat.ui.chat.ChatScreen
 import violett.pro.cvchat.ui.contacts.ContactScreen
 import violett.pro.cvchat.ui.keygen.KeyGenScreen
 
@@ -37,6 +41,11 @@ fun NavRoot(
     val backStack = rememberNavBackStack(startScreen)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     val lazyColumnContactState = rememberLazyListState()
+
+    val safeAreaModifier = Modifier
+        .fillMaxSize()
+        .windowInsetsPadding(WindowInsets.systemBars)
+
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -45,9 +54,9 @@ fun NavRoot(
             when (key) {
 
                 is KeyGenScreenUi -> {
-                    NavEntry(key=key){
+                    NavEntry(key = key) {
                         KeyGenScreen(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = safeAreaModifier,
                             onKeysGenerated = {
                                 backStack.add(ContactScreenUi)
                                 backStack.remove(KeyGenScreenUi)
@@ -58,14 +67,19 @@ fun NavRoot(
                 }
 
                 is ContactScreenUi -> {
-                    NavEntry(key=key){
+                    NavEntry(key = key) {
                         ContactScreen(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = safeAreaModifier,
                             lazyColumnState = lazyColumnContactState
                         )
                     }
                 }
 
+                is ChatScreenUi -> {
+                    NavEntry(key = key) {
+                        ChatScreen()
+                    }
+                }
                 else -> throw RuntimeException("Invalid NavKey: $key")
             }
         }

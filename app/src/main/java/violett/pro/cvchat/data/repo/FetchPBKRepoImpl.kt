@@ -3,6 +3,7 @@ package violett.pro.cvchat.data.repo
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -24,8 +25,10 @@ class FetchPBKRepoImpl(
     override suspend fun fetchPBK(tempId: String): CustomResult<GetPublicKeyRequestDto, NetworkError> {
         return try {
             val response = client.get(
-                urlString = "http://192.168.1.100:8080/key/${tempId}/"
-            )
+                urlString = "http://192.168.1.100:8080/key/"
+            ){
+                parameter("id", tempId)
+            }
 
             if (response.status.isSuccess()) {
                 val responseBody: GetPublicKeyRequestDto = response.body()
