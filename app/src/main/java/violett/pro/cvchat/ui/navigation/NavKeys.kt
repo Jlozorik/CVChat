@@ -2,6 +2,7 @@ package violett.pro.cvchat.ui.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
+import violett.pro.cvchat.domain.model.Contact
 
 
 @Serializable
@@ -14,4 +15,4 @@ object ContactScreenUi : NavKey
 object LoadingScreenUi : NavKey
 
 @Serializable
-object ChatScreenUi : NavKey
+data class ChatScreenUi(val tempId: String,val name: String) : NavKey

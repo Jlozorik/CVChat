@@ -6,13 +6,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import violett.pro.cvchat.data.remote.ChatSocketService
+import violett.pro.cvchat.domain.model.Message
+import violett.pro.cvchat.domain.model.MessageStatus
 import violett.pro.cvchat.domain.model.websocket.ClientMessage
 import violett.pro.cvchat.domain.model.websocket.MessageStatusUpdate
 import violett.pro.cvchat.domain.model.websocket.ReceivedMessage
+import violett.pro.cvchat.domain.usecases.bd.message.SaveMessageUseCase
 import java.util.UUID
 
 class SocketViewModel(
-    private val socketService: ChatSocketService
+    private val socketService: ChatSocketService,
+    private val saveMessageUseCase: SaveMessageUseCase
 ) : ViewModel() {
 
     private var connectionJob: Job? = null
@@ -24,8 +28,15 @@ class SocketViewModel(
             socketService.connect(tempId).collect { event ->
                 when (event) {
                     is ReceivedMessage -> {
-                        // TODO: Сохранить в Room БД
-                        println("UI: Получено сообщение от ${event.from}: ${event.payload}")
+                        val message = Message(
+                            id = UUID.randomUUID().toString(),
+                            contactId = event.from,
+                            content = event.payload,
+                            timestamp = System.currentTimeMillis(),
+                            isMine = false,
+                            status = MessageStatus.SENT
+                        )
+                        saveMessageUseCase(message)
                     }
                     is MessageStatusUpdate -> {
                         // TODO: Обновить статус в БД

@@ -11,6 +11,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import violett.pro.cvchat.data.crypto.CryptoManager
@@ -39,6 +40,7 @@ import violett.pro.cvchat.domain.usecases.bd.message.GetChatMessagesUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.SaveMessageUseCase
 import violett.pro.cvchat.domain.usecases.bd.message.UpdateMessageStatusUseCase
 import violett.pro.cvchat.ui.SocketViewModel
+import violett.pro.cvchat.ui.chat.ChatViewModel
 import violett.pro.cvchat.ui.contacts.ContactViewModel
 import violett.pro.cvchat.ui.keygen.KeyGenViewModel
 
@@ -115,6 +117,14 @@ val mainModule = module {
     viewModelOf(::KeyGenViewModel)
     viewModelOf(::ContactViewModel)
     viewModelOf(::SocketViewModel)
+    viewModel { (contactId: String) ->
+        ChatViewModel(
+            contactId = contactId,
+            getMessagesUseCase = get(),
+            saveMessageUseCase = get(),
+            socketViewModel = get()
+        )
+    }
 
     single { ChatSocketService(get(), get()) }
 

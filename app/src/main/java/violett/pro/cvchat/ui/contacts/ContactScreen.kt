@@ -135,7 +135,7 @@ fun ContactScreen(
                         ContactItem(
                             contact = contact,
                             onClick = {
-
+                                onChatClick(contact)
                             },
                             onRenameConfirmed = {
                                 viewModel.changeName(contact.tempId,it)

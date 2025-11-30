@@ -70,14 +70,20 @@ fun NavRoot(
                     NavEntry(key = key) {
                         ContactScreen(
                             modifier = safeAreaModifier,
-                            lazyColumnState = lazyColumnContactState
+                            lazyColumnState = lazyColumnContactState,
+                            onChatClick = { contact ->
+                                backStack.add(ChatScreenUi(tempId = contact.tempId, name = contact.name))
+                            }
                         )
                     }
                 }
 
                 is ChatScreenUi -> {
                     NavEntry(key = key) {
-                        ChatScreen()
+                        ChatScreen(
+                            contactId = key.tempId,
+                            contactName = key.name,
+                        )
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey: $key")

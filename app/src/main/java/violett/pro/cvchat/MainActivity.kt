@@ -52,12 +52,11 @@ class MainActivity : ComponentActivity() {
             )
         }
         val areKeysGenerated = sharedPrefs.getBoolean("KEY_GENERATED_FLAG", false)
-//        val startScreen = if (areKeysGenerated) {
-//            ContactScreenUi
-//        } else {
-//            KeyGenScreenUi
-//        }
-        val startScreen = ChatScreenUi
+        val startScreen = if (areKeysGenerated) {
+            ContactScreenUi
+        } else {
+            KeyGenScreenUi
+        }
         setContent {
             CVChatTheme {
                 val insets = WindowInsets.systemBars.asPaddingValues()
