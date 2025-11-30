@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,7 +57,7 @@ fun ChatScreen(
         topBar = {
             ChatTopBar(
                 name = contactName.ifEmpty { contactId },
-                avatarUrl = "https://www.shareicon.net/data/128x128/2016/05/24/770137_man_512x512.png"
+                avatarUrl = "..."
             )
         },
         bottomBar = {
@@ -64,16 +65,14 @@ fun ChatScreen(
                 value = inputText,
                 onValueChange = { inputText = it },
                 onSend = {
-                    if (inputText.isNotBlank()) {
-                        viewModel.sendMessage(inputText)
-                        inputText = ""
-                    }
+                    viewModel.sendMessage(inputText)
+                    inputText = ""
                 },
-
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding())
                     .background(MaterialTheme.colorScheme.surface)
+                    .navigationBarsPadding()
+                    .imePadding()
             )
         }
     ) { paddingValues ->
@@ -86,7 +85,6 @@ fun ChatScreen(
             reverseLayout = true,
             contentPadding = PaddingValues(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
-
         ) {
             items(messages) { message ->
                 MessageBubble(message = message)
